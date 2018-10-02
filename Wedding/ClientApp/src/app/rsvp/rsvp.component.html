@@ -1,0 +1,21 @@
+<div class="row">
+  <div class="col-xs-4 col-cs-offset-4">
+    <p>RSVP here</p>
+    <form #rsvpForm="ngForm" (ngSubmit)="fetchRSVP()">
+      <div class="form-group">
+        <label for="rsvpId">RSVP Number</label>
+        <input type="text" class="form-control" id="rsvpId"
+               required
+               [(ngModel)]="rsvpId" name="rsvpId">
+        {{rsvpId}}
+        Form errors: {{rspvForm.errors}}
+        Control errors: {{rsvpId.errors}}
+        <control-messages [control]="rsvpForm.controls.rsvpId"></control-messages>
+      </div>
+
+      <button type="submit" class="btn btn-success" [disabled]="!rsvpForm.valid">Submit</button>
+    </form>
+
+
+  </div>
+</div>

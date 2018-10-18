@@ -1,21 +1,67 @@
 <div class="row">
-  <div class="col-xs-4 col-cs-offset-4">
-    <p>RSVP here</p>
-    <form #rsvpForm="ngForm" (ngSubmit)="fetchRSVP()">
+
+  <!-- RSVP ID Area -->
+  <div class="col-xs-4 col-xs-offset-2" *ngIf="!validRsvpForm">
+    <form #rsvpForm="ngForm" (ngSubmit)="fetchRSVP()" autocomplete="off">
       <div class="form-group">
-        <label for="rsvpId">RSVP Number</label>
+        <label for="rsvpId">Enter your RSVP number</label>
         <input type="text" class="form-control" id="rsvpId"
                required
-               [(ngModel)]="rsvpId" name="rsvpId">
-        {{rsvpId}}
-        Form errors: {{rspvForm.errors}}
-        Control errors: {{rsvpId.errors}}
-        <control-messages [control]="rsvpForm.controls.rsvpId"></control-messages>
+               [(ngModel)]="rsvpId"
+               name="rsvpId"
+               maxlength="5"
+               minlength="5">
+        <div *ngIf="formSubmissionError">You entered in an invalid rsvp id!</div>
+
       </div>
 
       <button type="submit" class="btn btn-success" [disabled]="!rsvpForm.valid">Submit</button>
     </form>
 
+    <!--<p>{{validRsvpForm | json}}</p>-->
 
+  </div>  
+
+  <!-- Confirm RSVP Area -->
+  <div class="col-xs-4 col-xs-offset-2" *ngIf="validRsvpForm">
+    <form [formGroup]="confirmRsvp" (ngSubmit)="confirmRSVP()" autocomplete="off">
+      <p>Welcome {{validRsvpForm.first}} {{validRsvpForm.last}}!</p>
+      <p>We've reserved {{validRsvpForm.numberOfGuests + 1}} seat{{validRsvpForm.numberOfGuests > 0 ? 's' : ''}} for you.</p>
+      <p>Will you be joining us for this occasion?</p>
+
+      <section>
+        <input type="radio" value="true" name="attending" formControlName="attending"> Hell yeah I am!
+        <input type="radio" value="false" name="attending" formControlName="attending"> Nah, I'm lame.
+      </section>      
+
+      <div formArrayName="guests" *ngIf="validRsvpForm.numberOfGuests > 0">
+        <div *ngFor="let guest of confirmRsvp.controls.guests.controls; let i = index">
+          <p>Please let us know below if your guests will be attending.</p>
+          <div [formGroupName]="i">
+            <label>Guest's First Name</label>
+            <input type="text"
+                   class="form-control"
+                   name="guestFirstName{{i}}"
+                   formControlName="first" />
+            <label>Guest's Last Name</label>
+            <input type="text"
+                   class="form-control"
+                   name="guestLastName{{i}}"
+                   formControlName="last" />
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-success" [disabled]="!confirmRsvp.valid">Submit</button>
+
+      <div>{{ confirmRsvp.value | json }}</div>
+
+    </form>
+
+    <div *ngIf="success">
+      You have successfully RSVP'ed! We look forward to seeing you on March 16th, 2019!
+    </div>
+    
   </div>
+
 </div>

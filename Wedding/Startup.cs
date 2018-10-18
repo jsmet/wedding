@@ -22,6 +22,9 @@ namespace Wedding
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddSingleton<Services.IRsvpService, Services.RsvpService>();
+            services.AddSingleton<Data.RsvpSql>(new Data.RsvpSql(Configuration.GetConnectionString("DefaultConnection")));
+
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {

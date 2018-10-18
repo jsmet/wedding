@@ -4,3 +4,7 @@
     padding-top: 50px;
   }
 }
+
+.header-image {
+  background-image: url('websiteheader.jpg');
+}

@@ -36,7 +36,7 @@ namespace Wedding.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ConfirmRsvp request)
         {
-            var test = request;
+            var result = await _repo.ConfirmRsvp(request);
 
             return Ok();
         }

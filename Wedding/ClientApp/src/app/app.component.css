@@ -6,5 +6,6 @@
 }
 
 .header-image {
-  background-image: url('websiteheader.jpg');
+  background-image: url('websiteheader2.jpg');
+  min-height: 350px;
 }

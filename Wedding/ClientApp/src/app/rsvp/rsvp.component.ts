@@ -8,63 +8,89 @@ import { validateConfig } from '@angular/router/src/config';
 
 @Component({
   selector: 'rsvp-component',
-  templateUrl: './rsvp.component.html'
+  templateUrl: './rsvp.component.html',
+  styleUrls: ['./rsvp.component.css']
 })
-export class RsvpComponent implements OnInit{
+export class RsvpComponent implements OnInit {
   rsvpForm: FormGroup;
   rsvpId: string;
-  formSubmissionError: boolean;
-  validRsvpForm: RSVP;
-  numberOfAllowedGuests: number[];
+  formSubmissionError: boolean;  
+  rsvp: RSVP;
   confirmRsvp: FormGroup;
-  testing: string;
   success: boolean;
 
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient    
+    private http: HttpClient
   ) { }
 
   ngOnInit() {
     this.rsvpForm = this.fb.group({
-      rsvpId: [ this.rsvpId ]
+      rsvpId: [this.rsvpId]
     });
 
     this.formSubmissionError = false;
+    this.success = false;
   }
 
   fetchRSVP() {
     this.http.get<RSVP>(`/api/RSVP?id=${this.rsvpId}`).subscribe(result => {
       this.formSubmissionError = false;
-      this.numberOfAllowedGuests = Array(result.numberOfGuests);
-      this.validRsvpForm = result;
-      this.setupConfirmRsvp();
-    }, error => {
-      this.validRsvpForm = null;
+      this.rsvp = result;
+      this.setupConfirmRsvp(result);
+    }, error => {      
       this.formSubmissionError = true;
     });
   }
 
-  setupConfirmRsvp() {
+  setupConfirmRsvp(result) {
     this.confirmRsvp = this.fb.group({
-      id: this.validRsvpForm.id,
-      attending: [null, Validators.required],
-      guests: this.fb.array([])
+      id: result.id,
+      attending: [result.attending, Validators.required],
+      numberOfGuests: result.numberOfGuests,
+      bringingGuest: (result.attending && result.guests && result.guests.length > 0 ? true : false)
     });
 
-    this.initGuests(this.validRsvpForm.numberOfGuests);
+    if (result.attending && result.guests && result.guests.length > 0) {
+      this.initGuests(result.guests);
+    }
   }
 
-  initGuests(numberOfGuests) {
+  initGuests(guests) {
+    this.confirmRsvp.addControl('guests', this.fb.array([]));
     const control = <FormArray>this.confirmRsvp.controls['guests'];
 
-    for (var x = 0; x < numberOfGuests; x++) {
-      control.push( this.fb.group({
-                      first: ['', Validators.required],
-                      last: ['', Validators.required]
-        })
-      );
-    }    
+    for (let x of guests) {
+      control.push(this.fb.group({
+        first: [x.first, Validators.required],
+        last: [x.last, Validators.required]
+      })
+      )
+    }
+  }
+
+  updateBringingGuest() {
+    if (this.confirmRsvp.controls['bringingGuest'].value) {
+      this.confirmRsvp.addControl('guests', this.fb.array([]));
+      this.addGuest();
+    } else {
+      this.confirmRsvp.removeControl('guests');
+    }
+  }
+
+  addGuest() {
+    const control = <FormArray>this.confirmRsvp.controls['guests'];
+
+    control.push(this.fb.group({
+      first: ['', Validators.required],
+      last: ['', Validators.required]
+    })
+    )
+  }
+
+  removeGuest(index) {
+    const control = <FormArray>this.confirmRsvp.controls['guests'];
+    control.removeAt(index);
   }
 
   confirmRSVP() {

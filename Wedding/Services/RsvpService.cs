@@ -25,9 +25,18 @@ namespace Services
             }
             else
             {
+#if !DEBUG
                 _telemetryClient.TrackEvent("InvalidIDAtServiceLayer", new Dictionary<string, string>() { { "RsvpID", rsvpId.ToString() } });
+#endif
                 return null;
             }
+        }
+
+        public async Task<ConfirmRsvpResponse> ConfirmRsvp(ConfirmRsvp request)
+        {
+            return await _data.ConfirmRsvp(request);
+
+            return new ConfirmRsvpResponse();
         }
     }
 }

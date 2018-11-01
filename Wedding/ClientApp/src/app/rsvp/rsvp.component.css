@@ -1,2 +1,17 @@
-﻿body {
+.body-content {
+  background-image: url('rsvp.jpg');
+  background-position: top right;
+  background-repeat: no-repeat;
+  border: 1px solid #958585;
+  margin-bottom: 25px;
+  font-family: 'Monotype Corsiva';
+  font-size: 18px;
+  font-weight: 500;
+}
+
+input {
+  width: 50%;
+  font-family: Gabriola;
+  font-weight: 700;
+  font-size: 18px;
 }

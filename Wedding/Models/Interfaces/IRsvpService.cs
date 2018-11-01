@@ -9,5 +9,6 @@ namespace Services
     public interface IRsvpService
     {
         Task<Rsvp> GetRsvp(int rsvpID);
+        Task<ConfirmRsvpResponse> ConfirmRsvp(ConfirmRsvp request);
     }
 }

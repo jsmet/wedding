@@ -29,13 +29,13 @@ namespace Wedding.Data
                     using (var cmd = conn.CreateCommand())
                     {
                         string sql = @"
-SELECT i.ID, i.[First], i.[Last], i.Attending, i.NumberOfGuests
-FROM Invitees i 
+SELECT i.[First], i.[Last], i.Attending, i.NumberOfGuests
+FROM Invitee i 
 WHERE RsvpId = @rsvpID
 
 SELECT g.[First], g.[Last]
-FROM Guests g
-WHERE InviteeID = (SELECT i.[ID] FROM Invitees i WHERE i.RsvpId = @rsvpID)
+FROM Guest g
+WHERE g.RsvpId = @rsvpID
 ";
                         cmd.CommandText = sql;
                         cmd.Parameters.Add(new SqlParameter("@rsvpID", rsvpId));
@@ -43,22 +43,28 @@ WHERE InviteeID = (SELECT i.[ID] FROM Invitees i WHERE i.RsvpId = @rsvpID)
                         await conn.OpenAsync();
                         using (var reader = await cmd.ExecuteReaderAsync())
                         {
-                            if (await reader.ReadAsync())
-                            {
-                                result = new Rsvp()
-                                {
-                                    ID = reader.GetInt32(reader.GetOrdinal("ID")),
-                                    First = reader.GetString(reader.GetOrdinal("First")),
-                                    Last = reader.GetString(reader.GetOrdinal("Last")),                                    
-                                    NumberOfGuests = reader.GetInt32(reader.GetOrdinal("NumberOfGuests"))
+                            if (reader.HasRows) {
+                                result = new Rsvp() {
+                                    RsvpID = rsvpId,
+                                    Invitees = new List<Invitee>()
                                 };
+                                while (await reader.ReadAsync())
+                                {
+                                    result.NumberOfGuests += reader.GetInt32(reader.GetOrdinal("NumberOfGuests"));
 
-                                if (!reader.IsDBNull(reader.GetOrdinal("Attending")))
-                                {
-                                    result.Attending = reader.GetBoolean(reader.GetOrdinal("Attending"));
-                                } else
-                                {
-                                    result.Attending = null;
+                                    result.Invitees.Add(new Invitee() {
+                                        First = reader.GetString(reader.GetOrdinal("First")),
+                                        Last = reader.GetString(reader.GetOrdinal("Last"))
+                                    });
+
+                                    if (!reader.IsDBNull(reader.GetOrdinal("Attending")))
+                                    {
+                                        result.Attending = reader.GetBoolean(reader.GetOrdinal("Attending"));
+                                    }
+                                    else
+                                    {
+                                        result.Attending = null;
+                                    }
                                 }
 
                                 // We could have another recordset if this person has already RSVP'ed before and is wanting to update their info
@@ -116,16 +122,16 @@ SET NOCOUNT ON
 BEGIN TRAN 
 
 -- Update their attending status
-UPDATE Invitees SET Attending = @attending WHERE [ID] = @inviteeID;
+UPDATE Invitee SET Attending = @attending WHERE RsvpID = @rsvpID;
 
 -- They could be updating their RSVP, delete previous guests out
-DELETE FROM Guests WHERE InviteeID = @inviteeID;
+DELETE FROM Guest WHERE RsvpID = @rsvpID;
 
 -- Add their guests
 IF ISJSON (@guestsJson) > 0
-    INSERT INTO Guests ([First], [Last], InviteeID)
+    INSERT INTO Guest ([First], [Last], RsvpID)
     OUTPUT inserted.ID
-    SELECT [First], [Last], @inviteeID
+    SELECT [First], [Last], @rsvpID
         FROM OPENJSON(@guestsJson)
             WITH (
                 [First] NVARCHAR(256),
@@ -138,7 +144,7 @@ COMMIT TRAN
 ";
                         string guestsJson = JsonConvert.SerializeObject(request.Guests);
                         cmd.Parameters.AddWithValue("@guestsJson", guestsJson);
-                        cmd.Parameters.AddWithValue("@inviteeID", request.ID);
+                        cmd.Parameters.AddWithValue("@rsvpID", request.RsvpID);
                         cmd.Parameters.AddWithValue("@attending", request.Attending);
 
                         cmd.CommandText = sql;                        
@@ -166,7 +172,7 @@ COMMIT TRAN
 #if !DEBUG
                 new TelemetryClient().TrackException(e, 
                     new Dictionary<string, string>() {
-                        { "ID", request.ID.ToString() },
+                        { "ID", request.RsvpID.ToString() },
                         { "Attending", request.Attending.ToString() },
                         { "GuestCount", request.Guests.Length.ToString() }
                     });

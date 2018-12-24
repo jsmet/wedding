@@ -1,0 +1,17 @@
+.header {
+  margin-top: 25px;
+  text-align: center;
+}
+
+  .header h2 {
+    margin-bottom: 30px;
+    font-family: 'Cinzel', serif;
+  }
+
+  .header h4 {
+    font-family: 'Cinzel', serif;
+  }
+
+#google-map {
+  height: 400px;
+}

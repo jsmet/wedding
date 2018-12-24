@@ -1,66 +1,82 @@
 <div class="row body-content">
+  <mat-progress-spinner class="loading-indicator" diamater="100" value="50" mode="indeterminate" *ngIf="!validRsvp"></mat-progress-spinner>
 
   <!-- RSVP ID Area -->
-  <div class="col-xs-12" *ngIf="!rsvp && !success">
+  <div class="col-xs-offset-3 rsvp-retrieve-form" *ngIf="!rsvp && !success">
     <form #rsvpForm="ngForm" (ngSubmit)="fetchRSVP()" autocomplete="off">
       <div class="form-group">
-        <label for="rsvpId">Enter your RSVP number</label>
-        <input type="text" class="form-control" id="rsvpId"
-               required
-               [(ngModel)]="rsvpId"
-               name="rsvpId"
-               maxlength="5"
-               minlength="5">
-        <div *ngIf="formSubmissionError">You entered in an invalid rsvp id!</div>
-
+        <p>Please enter your reservation #, found on RSVP card.</p>
+        <mat-form-field>
+          <input matInput type="text" class="form-control" id="rsvpId"
+                 required
+                 [(ngModel)]="rsvpId"
+                 name="rsvpId">
+          <div class="error" *ngIf="formSubmissionError && validRsvp">You entered in an invalid rsvp id!</div>
+        </mat-form-field>
+        <div *ngIf="showHelpText >= 3">
+          <p>Need help? Give us a call.</p>
+          <p>Jonathan: 407-346-3099</p>
+          <p>Nina: 702-622-4712</p>
+        </div>
       </div>
 
-      <button type="submit" class="btn btn-success" [disabled]="!rsvpForm.valid">Submit</button>
+      <button type="submit" class="btn btn-success" [disabled]="!rsvpForm.valid || !validRsvp">Submit</button>
     </form>
   </div>
 
   <!-- Confirm RSVP Area -->
-  <div class="col-xs-12" *ngIf="rsvp && !success">
+  <div class="col-xs-9 col-xs-offset-3 rsvp-card" *ngIf="rsvp && !success">
     <form [formGroup]="confirmRsvp" (ngSubmit)="confirmRSVP()" autocomplete="off">
-      <h2>Welcome {{rsvp.first}} {{rsvp.last}}!</h2>
-      <p>We've reserved {{rsvp.numberOfGuests + 1}} seat{{rsvp.numberOfGuests > 0 ? 's' : ''}} for you.</p>
-      <p>Will you be joining us for this occasion?</p>
-
-      <section>
-        <input type="radio" [value]="true" name="attending" formControlName="attending"> Hell yeah I am!
-        <input type="radio" [value]="false" name="attending" formControlName="attending"> Nah, I'm lame.
-      </section>
-
-      <div *ngIf="confirmRsvp.controls.numberOfGuests.value > 0">
-        <p> Will you be bringing a guest?</p>
-        <input type="checkbox" formControlName="bringingGuest" (change)="updateBringingGuest()" />
+      <div class="bottom-margin-spacing-50">
+        <h1 *ngIf="rsvp.invitees.length === 1">Welcome {{rsvp.invitees[0].first}} {{rsvp.invitees[0].last}}!</h1>
+        <h1 *ngIf="rsvp.invitees.length === 2">Welcome {{rsvp.invitees[0].first}} {{rsvp.invitees[0].last}} and {{rsvp.invitees[1].first}} {{rsvp.invitees[1].last}}!</h1>
+        <p>We have reserved {{rsvp.numberOfGuests + rsvp.invitees.length}} seat{{rsvp.numberOfGuests > 0 ? 's' : ''}} in your honor.</p>
+        <p>Will you be joining us for this occasion?</p>
       </div>
 
-      <div formArrayName="guests" *ngIf="confirmRsvp.controls.bringingGuest.value">
-        <div *ngFor="let guest of confirmRsvp.controls.guests.controls; let i = index">
-          <p *ngIf="i === 0">Please let us know below if your guests will be attending.</p>
-          <div [formGroupName]="i">
-            <label>Guest's First Name</label>
-            <input type="text"
-                   class="form-control"
-                   name="guestFirstName{{i}}"
-                   formControlName="first" />
-            <label>Guest's Last Name</label>
-            <input type="text"
-                   class="form-control"
-                   name="guestLastName{{i}}"
-                   formControlName="last" />
-          </div>
-          <a (click)="removeGuest(i)">Remove guest</a>
+      <div class="bottom-margin-spacing-50">
+        <mat-radio-group formControlName="attending">
+          <p>
+            <mat-radio-button [value]="true">Yes, I will be attending! </mat-radio-button>
+          </p>
+          <p>
+            <mat-radio-button [value]="false">No, I will not be attending. </mat-radio-button>
+          </p>
+        </mat-radio-group>
+      </div>
 
+      <div class="bottom-margin-spacing-25" *ngIf="confirmRsvp.controls.numberOfGuests.value > 0 && confirmRsvp.controls.attending.value">
+        <mat-checkbox formControlName="bringingGuest" (change)="updateBringingGuest()">Please check if you are bringing a guest.</mat-checkbox>
+      </div>
+
+      <div formArrayName="guests" *ngIf="confirmRsvp.controls.bringingGuest.value && confirmRsvp.controls.attending.value">
+        <div *ngFor="let guest of confirmRsvp.controls.guests.controls; let i = index">
+          <div class="row bottom-margin-spacing-50" [formGroupName]="i">
+            <div class="col-xs-4">
+              <label>Guest's First Name</label>
+              <input matInput
+                     type="text"
+                     class="form-control"
+                     name="guestFirstName{{i}}"
+                     formControlName="first" />
+            </div>
+            <div class="col-xs-4">
+              <label>Guest's Last Name</label>
+              <input matInput
+                     type="text"
+                     class="form-control"
+                     name="guestLastName{{i}}"
+                     formControlName="last" />
+            </div>
+            <div class="col-xs-12">
+              <a (click)="removeGuest(i)">Remove guest</a>
+            </div>
+          </div>
         </div>
         <a *ngIf="confirmRsvp.controls.numberOfGuests.value > confirmRsvp.controls.guests.length" (click)="addGuest()">Add another guest</a>
       </div>
 
       <button type="submit" class="btn btn-success" [disabled]="!confirmRsvp.valid">{{ rsvp.guests && rsvp.guests.length > 0 ? "Update" : "Submit" }}  </button>
-
-      <div>{{ confirmRsvp.value | json }}</div>
-
     </form>
   </div>
 

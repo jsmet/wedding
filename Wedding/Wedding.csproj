@@ -32,8 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\app\rsvp\confirmRsvp.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\rsvp\rsvp.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\rsvp\models\confirmRsvp.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\rsvp\models\rsvp.ts" />
   </ItemGroup>
 
   <ItemGroup>

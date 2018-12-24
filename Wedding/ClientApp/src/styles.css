@@ -1,1 +1,38 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+body {
+  background-color: #252d3a;
+}
+
+.mat-input-underline {
+  display: none;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #808989 !important;
+  color: white;
+}
+
+a {
+  color: #fff !important;
+  font-family: 'Julius Sans One', sans-serif !important;
+  font-size: 1.5em !important;
+}
+
+li.link-active[_ngcontent-c1] a[_ngcontent-c1], li.link-active[_ngcontent-c1] a[_ngcontent-c1]:hover, li.link-active[_ngcontent-c1] a[_ngcontent-c1]:focus {
+  background-color: #252d3a !important;
+}
+
+.nav-tabs > li > a {
+  border-top-right-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  margin-right: 0 !important;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

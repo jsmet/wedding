@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.ApplicationInsights;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Wedding.Data;
@@ -18,8 +19,8 @@ namespace Services
         }
 
         public async Task<Rsvp> GetRsvp(int rsvpId)
-        {            
-            if (rsvpId.ToString().Length == 5)
+        {
+            if (rsvpId.ToString().Length == 5 || rsvpId.ToString().Length == 6)
             {
                 return await _data.GetRsvp(rsvpId);
             }
@@ -35,8 +36,6 @@ namespace Services
         public async Task<ConfirmRsvpResponse> ConfirmRsvp(ConfirmRsvp request)
         {
             return await _data.ConfirmRsvp(request);
-
-            return new ConfirmRsvpResponse();
         }
     }
 }

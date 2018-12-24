@@ -5,7 +5,32 @@
   }
 }
 
+.web-container {
+ 
+}
+
+.nav-menu {
+  background-color: #808989;
+  color: white;
+}
+
 .header-image {
-  background-image: url('websiteheader2.jpg');
+  background-image: url('websiteheader.png');
   min-height: 350px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.body-contents {
+  background-color: white;
+  min-height: 100vh;
+}
+
+.body-contents-container {
+  background-color: #252d3a;
+}
+
+.nav, .nav-tabs {
+  border: 0px !important;
 }

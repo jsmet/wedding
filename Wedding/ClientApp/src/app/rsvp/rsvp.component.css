@@ -1,17 +1,76 @@
 .body-content {
-  background-image: url('rsvp.jpg');
-  background-position: top right;
-  background-repeat: no-repeat;
-  border: 1px solid #958585;
-  margin-bottom: 25px;
   font-family: 'Monotype Corsiva';
   font-size: 18px;
   font-weight: 500;
 }
 
+.rsvp-retrieve-form {
+  margin-top: 45px;
+  font-size: 24px;
+}
+
+  .rsvp-retrieve-form input {
+    font-family: 'Times New Roman' !important;
+    width: 35%;
+  }
+
+.error {
+  color: #a94442;
+}
+
+.rsvp-card {
+  background-image: url('./assets/rsvpBackground.png');
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-top: 50px;
+}
+
+  .rsvp-card h1 {
+    font-size: 42px;
+  }
+
+.bottom-margin-spacing-50 {
+  margin-bottom: 50px;
+}
+
+.bottom-margin-spacing-25 {
+  margin-bottom: 25px;
+}
+
 input {
-  width: 50%;
-  font-family: Gabriola;
+  font-family: 'Julius Sans One', sans-serif;
   font-weight: 700;
   font-size: 18px;
+}
+
+label, mat-radio-button, mat-checkbox {
+  font-family: 'Cormorant Upright', serif;
+}
+
+button {
+  font-family: 'Julius Sans One', sans-serif;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+a {
+  color: blue !important;
+  font-size: 12px !important;
+}
+
+/* Absolute Center Spinner */
+.loading-indicator {
+  position: fixed;
+  z-index: 999;
+  height: 2em;
+  width: 2em;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }

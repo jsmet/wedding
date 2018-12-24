@@ -1,10 +1,14 @@
 
 import { Component, OnInit, Inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { RSVP } from './rsvp';
-import { ConfirmRsvp } from './confirmRsvp';
+import { RSVP } from './models/rsvp';
+import { ConfirmRsvp } from './models/confirmRsvp';
 import { validateConfig } from '@angular/router/src/config';
+import { ReservationAcceptedComponent } from './dialogs/reservation-accepted/reservation-success.component';
+import { ReservationDeclinedComponent } from './dialogs/reservation-declined/reservation-declined.component';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'rsvp-component',
@@ -18,10 +22,14 @@ export class RsvpComponent implements OnInit {
   rsvp: RSVP;
   confirmRsvp: FormGroup;
   success: boolean;
+  showHelpText: number;
+  validRsvp: boolean;
 
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -31,21 +39,28 @@ export class RsvpComponent implements OnInit {
 
     this.formSubmissionError = false;
     this.success = false;
+    this.showHelpText = 0;
+    this.validRsvp = true;
   }
 
   fetchRSVP() {
+    this.validRsvp = false;
     this.http.get<RSVP>(`/api/RSVP?id=${this.rsvpId}`).subscribe(result => {
+      this.validRsvp = true;
+      this.showHelpText = 0;
       this.formSubmissionError = false;
       this.rsvp = result;
       this.setupConfirmRsvp(result);
-    }, error => {      
+    }, error => {
+      this.validRsvp = true;
       this.formSubmissionError = true;
+      this.showHelpText++;
     });
   }
 
   setupConfirmRsvp(result) {
     this.confirmRsvp = this.fb.group({
-      id: result.id,
+      rsvpID: result.rsvpID,
       attending: [result.attending, Validators.required],
       numberOfGuests: result.numberOfGuests,
       bringingGuest: (result.attending && result.guests && result.guests.length > 0 ? true : false)
@@ -95,7 +110,11 @@ export class RsvpComponent implements OnInit {
 
   confirmRSVP() {
     this.http.post('/api/RSVP', this.confirmRsvp.value).subscribe(result => {
-      this.success = true;
+      const accepted = this.confirmRsvp.controls['attending'].value;
+      const dialogRef = this.dialog.open(accepted == true ? ReservationAcceptedComponent : ReservationDeclinedComponent);
+      dialogRef.afterClosed().subscribe(result => {
+        this.router.navigate(['/counter']);
+      })
     }, error => {
       this.success = false;
     });

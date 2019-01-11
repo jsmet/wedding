@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-photos',
@@ -7,9 +9,32 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PhotosComponent implements OnInit {
 
-  constructor() { }
+  folderNames: string[];
+  imageUrls: string[];
+  imageIndex: 0;
+
+  constructor(
+    private http: HttpClient,
+  ) { }
 
   ngOnInit() {
+    this.getFolderNames();
   }
 
+  getFolderNames () {
+    this.http.get<string[]>(`/api/Photo`).subscribe(result => {
+      this.folderNames = result;
+    }, error => {
+      var testing = error;
+    });
+  }
+
+  getFolderImages(folder: string) {
+    this.http.get<string[]>(`/api/Photo/${folder}`).subscribe(result => {
+      this.imageIndex = 0;
+      this.imageUrls = result;
+    }, error => {
+      // fuck
+    });
+  }
 }

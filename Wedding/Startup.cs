@@ -1,6 +1,6 @@
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +22,9 @@ namespace Wedding
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSingleton<Services.IRsvpService, Services.RsvpService>();
+            services.AddSingleton<Interfaces.IRsvpService, Services.RsvpService>();
+            services.AddSingleton<Interfaces.IPhotoService, Services.PhotoService>();
+            services.AddSingleton<Services.PhotoService>(new Services.PhotoService(Configuration.GetConnectionString("BlobStorageConnection")));
             services.AddSingleton<Data.RsvpSql>(new Data.RsvpSql(Configuration.GetConnectionString("DefaultConnection")));
 
             // In production, the Angular files will be served from this directory

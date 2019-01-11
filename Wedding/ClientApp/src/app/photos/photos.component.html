@@ -1,5 +1,9 @@
 <div class="row header">
   <div class="col-xs-8 col-xs-offset-2">
-    Jonathan is slacking and hasn't gotten to this yet. I'm on his case though.
+    <div class="col-xs-3 folder" *ngFor="let folder of folderNames" (click)="getFolderImages(folder)">
+      <i class="fa fa-folder"></i><span>{{folder | titlecase}}</span>
+    </div>
+    
+    <ngx-image-viewer *ngIf="imageUrls?.length > 0" [src]="imageUrls" [(index)]="imageIndex"></ngx-image-viewer>
   </div>
 </div>

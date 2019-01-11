@@ -1,8 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
-using Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Wedding.Interfaces;
 using Wedding.Models;
 
 namespace Wedding.Controllers
@@ -15,7 +15,7 @@ namespace Wedding.Controllers
         private static Dictionary<string, int> _clientRequests = null;
         private static readonly object instanceLock = new object();
 
-        public RSVPController(Services.IRsvpService repo)
+        public RSVPController(Interfaces.IRsvpService repo)
         {
             _repo = repo;
             if (_clientRequests == null)

@@ -1,3 +1,19 @@
 .header {
   margin-top: 50px;
 }
+
+.folder {  
+  cursor: pointer;
+  min-height: 50px;
+  line-height: 50px;
+  text-align: center;
+}
+
+  .folder span {
+    padding-left: 10px;
+  }
+
+  .folder:hover {
+    border: 2px solid #808989;
+    border-radius: 5px;
+  }

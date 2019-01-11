@@ -1,12 +1,11 @@
 ﻿
 using Microsoft.ApplicationInsights;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Wedding.Data;
 using Wedding.Models;
+using Wedding.Interfaces;
 
-namespace Services
+namespace Wedding.Services
 {
     public class RsvpService : IRsvpService
     {
